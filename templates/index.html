@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+
+{% block title %}Welcome - Alumni Networking Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <!-- Hero Section -->
+    <div class="row mb-5">
+        <div class="col-lg-12 text-center">
+            <h1 class="display-4 fw-bold mb-4">Welcome to Alumni Networking Portal</h1>
+            <p class="lead mb-4">Connect with fellow alumni, discover career opportunities, and stay updated with events.</p>
+            {% if not session.user_id %}
+                <div class="d-flex justify-content-center gap-3">
+                    <a href="{{ url_for('register') }}" class="btn btn-primary btn-lg">
+                        <i data-feather="user-plus" class="me-2"></i>Join Now
+                    </a>
+                    <a href="{{ url_for('login') }}" class="btn btn-outline-secondary btn-lg">
+                        <i data-feather="log-in" class="me-2"></i>Login
+                    </a>
+                </div>
+            {% else %}
+                <a href="{{ url_for('dashboard') }}" class="btn btn-primary btn-lg">
+                    <i data-feather="home" class="me-2"></i>Go to Dashboard
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Features Section -->
+    <div class="row mb-5">
+        <div class="col-lg-12">
+            <h2 class="text-center mb-4">Platform Features</h2>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i data-feather="users" class="text-primary mb-3" style="width: 48px; height: 48px;"></i>
+                    <h5 class="card-title">Alumni Network</h5>
+                    <p class="card-text">Connect with alumni from your department, company, or graduation year.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i data-feather="briefcase" class="text-success mb-3" style="width: 48px; height: 48px;"></i>
+                    <h5 class="card-title">Job Opportunities</h5>
+                    <p class="card-text">Discover and post job opportunities within the alumni network.</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card h-100">
+                <div class="card-body text-center">
+                    <i data-feather="calendar" class="text-info mb-3" style="width: 48px; height: 48px;"></i>
+                    <h5 class="card-title">Events & Meetups</h5>
+                    <p class="card-text">Stay updated with alumni events and networking meetups.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    {% if session.user_id %}
+    <!-- Recent Activity for logged-in users -->
+    <div class="row">
+        {% if recent_jobs %}
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i data-feather="briefcase" class="me-2"></i>Recent Jobs</h5>
+                    <a href="{{ url_for('jobs') }}" class="btn btn-sm btn-outline-secondary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% for job in recent_jobs %}
+                    <div class="border-bottom pb-3 mb-3{% if loop.last %} border-0 pb-0 mb-0{% endif %}">
+                        <h6 class="mb-1">{{ job.title }}</h6>
+                        <p class="text-muted mb-1">{{ job.company }} - {{ job.location }}</p>
+                        <small class="text-muted">Posted {{ format_date_filter(job.created_at) }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+
+        {% if recent_events %}
+        <div class="col-lg-6 mb-4">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h5 class="mb-0"><i data-feather="calendar" class="me-2"></i>Upcoming Events</h5>
+                    <a href="{{ url_for('events') }}" class="btn btn-sm btn-outline-secondary">View All</a>
+                </div>
+                <div class="card-body">
+                    {% for event in recent_events %}
+                    <div class="border-bottom pb-3 mb-3{% if loop.last %} border-0 pb-0 mb-0{% endif %}">
+                        <h6 class="mb-1">{{ event.title }}</h6>
+                        <p class="text-muted mb-1">{{ event.location }}</p>
+                        <small class="text-muted">{{ format_date_filter(event.date) }}</small>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    {% else %}
+    <!-- Call to Action for non-logged-in users -->
+    <div class="row">
+        <div class="col-lg-12">
+            <div class="card bg-primary text-white">
+                <div class="card-body text-center py-5">
+                    <h3 class="mb-3">Ready to Connect?</h3>
+                    <p class="mb-4">Join thousands of alumni who are networking, sharing opportunities, and building meaningful connections.</p>
+                    <a href="{{ url_for('register') }}" class="btn btn-light btn-lg">
+                        <i data-feather="arrow-right" class="me-2"></i>Get Started Today
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}

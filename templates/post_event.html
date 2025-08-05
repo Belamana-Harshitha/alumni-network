@@ -1,0 +1,90 @@
+{% extends "base.html" %}
+
+{% block title %}Create Event - Alumni Networking Portal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i data-feather="calendar-plus" class="me-2"></i>Create Alumni Event</h4>
+                    <p class="text-muted mb-0">Organize a networking event or alumni gathering</p>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label for="title" class="form-label">Event Title *</label>
+                            <input type="text" class="form-control" id="title" name="title" required
+                                   placeholder="e.g., Alumni Networking Mixer, Tech Talk Series">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="date" class="form-label">Event Date *</label>
+                                <input type="date" class="form-control" id="date" name="date" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="location" class="form-label">Location *</label>
+                                <input type="text" class="form-control" id="location" name="location" required
+                                       placeholder="e.g., University Campus, Downtown Hotel, Virtual Event">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Event Description *</label>
+                            <textarea class="form-control" id="description" name="description" rows="8" required
+                                      placeholder="Provide detailed event description including agenda, speakers, registration details, and any other relevant information..."></textarea>
+                            <div class="form-text">Include event agenda, target audience, registration process, and contact information.</div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('events') }}" class="btn btn-secondary">
+                                <i data-feather="arrow-left" class="me-2"></i>Back to Events
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i data-feather="send" class="me-2"></i>Create Event
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Event Guidelines -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h6 class="card-title"><i data-feather="info" class="me-2"></i>Event Creation Guidelines</h6>
+                    <ul class="mb-0">
+                        <li>Provide clear event objectives and target audience</li>
+                        <li>Include specific date, time, and location details</li>
+                        <li>Mention registration process and any fees</li>
+                        <li>Include contact information for questions</li>
+                        <li>Add agenda or schedule if available</li>
+                        <li>Specify dress code or any special requirements</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Set minimum date to today
+document.addEventListener('DOMContentLoaded', function() {
+    const dateInput = document.getElementById('date');
+    const today = new Date().toISOString().split('T')[0];
+    dateInput.setAttribute('min', today);
+    
+    // Auto-expand textarea
+    const textarea = document.getElementById('description');
+    textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+    });
+});
+</script>
+{% endblock %}

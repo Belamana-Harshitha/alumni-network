@@ -1,0 +1,148 @@
+{% extends "base.html" %}
+
+{% block title %}Search Alumni - Alumni Networking Portal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Search Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i data-feather="search" class="me-2"></i>Find Alumni</h2>
+            <p class="text-muted">Search and filter alumni by department, company, graduation year, or name.</p>
+        </div>
+    </div>
+    
+    <!-- Search Filters -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-body">
+                    <form method="GET" class="row g-3">
+                        <div class="col-md-3">
+                            <label for="q" class="form-label">Search Name</label>
+                            <input type="text" class="form-control" id="q" name="q" 
+                                   value="{{ search_params.q }}" placeholder="Search by name or username">
+                        </div>
+                        <div class="col-md-3">
+                            <label for="department" class="form-label">Department</label>
+                            <select class="form-select" id="department" name="department">
+                                <option value="">All Departments</option>
+                                {% for dept in departments %}
+                                <option value="{{ dept }}" {% if search_params.department == dept %}selected{% endif %}>
+                                    {{ dept }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="company" class="form-label">Company</label>
+                            <select class="form-select" id="company" name="company">
+                                <option value="">All Companies</option>
+                                {% for comp in companies %}
+                                <option value="{{ comp }}" {% if search_params.company == comp %}selected{% endif %}>
+                                    {{ comp }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <label for="graduation_year" class="form-label">Graduation Year</label>
+                            <input type="number" class="form-control" id="graduation_year" name="graduation_year" 
+                                   value="{{ search_params.graduation_year }}" min="1950" max="2030" placeholder="e.g., 2020">
+                        </div>
+                        <div class="col-12">
+                            <button type="submit" class="btn btn-primary">
+                                <i data-feather="search" class="me-2"></i>Search
+                            </button>
+                            <a href="{{ url_for('search') }}" class="btn btn-outline-secondary">
+                                <i data-feather="x" class="me-2"></i>Clear Filters
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Search Results -->
+    <div class="row">
+        <div class="col-12">
+            {% if users %}
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h5>Search Results ({{ users|length }} found)</h5>
+                </div>
+                
+                <div class="row">
+                    {% for user in users %}
+                    <div class="col-md-6 col-lg-4 mb-4">
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div class="d-flex justify-content-between align-items-start mb-3">
+                                    <h6 class="card-title mb-0">{{ user.full_name }}</h6>
+                                    <span class="badge bg-secondary">{{ user.user_type.title() }}</span>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <small class="text-muted d-block">
+                                        <i data-feather="user" class="me-1" style="width: 14px; height: 14px;"></i>
+                                        {{ user.username }}
+                                    </small>
+                                    {% if user.graduation_year %}
+                                    <small class="text-muted d-block">
+                                        <i data-feather="calendar" class="me-1" style="width: 14px; height: 14px;"></i>
+                                        Class of {{ user.graduation_year }}
+                                    </small>
+                                    {% endif %}
+                                    {% if user.department %}
+                                    <small class="text-muted d-block">
+                                        <i data-feather="book" class="me-1" style="width: 14px; height: 14px;"></i>
+                                        {{ user.department }}
+                                    </small>
+                                    {% endif %}
+                                    {% if user.current_company %}
+                                    <small class="text-muted d-block">
+                                        <i data-feather="briefcase" class="me-1" style="width: 14px; height: 14px;"></i>
+                                        {{ user.current_company }}
+                                    </small>
+                                    {% endif %}
+                                    {% if user.location %}
+                                    <small class="text-muted d-block">
+                                        <i data-feather="map-pin" class="me-1" style="width: 14px; height: 14px;"></i>
+                                        {{ user.location }}
+                                    </small>
+                                    {% endif %}
+                                </div>
+                                
+                                <div class="d-flex gap-2">
+                                    <a href="{{ url_for('profile', user_id=user.id) }}" class="btn btn-sm btn-outline-primary flex-fill">
+                                        <i data-feather="eye" class="me-1"></i>View Profile
+                                    </a>
+                                    <a href="{{ url_for('send_message', recipient_id=user.id) }}" class="btn btn-sm btn-primary">
+                                        <i data-feather="mail" class="me-1"></i>Message
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i data-feather="users" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                        <h5 class="text-muted">No Alumni Found</h5>
+                        {% if search_params.q or search_params.department or search_params.company or search_params.graduation_year %}
+                            <p class="text-muted">Try adjusting your search filters to find more results.</p>
+                            <a href="{{ url_for('search') }}" class="btn btn-outline-primary">
+                                <i data-feather="refresh-cw" class="me-2"></i>Clear All Filters
+                            </a>
+                        {% else %}
+                            <p class="text-muted">No alumni profiles are available at the moment.</p>
+                        {% endif %}
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

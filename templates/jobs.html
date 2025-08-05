@@ -1,0 +1,135 @@
+{% extends "base.html" %}
+
+{% block title %}Job Opportunities - Alumni Networking Portal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center">
+                <div>
+                    <h2><i data-feather="briefcase" class="me-2"></i>Job Opportunities</h2>
+                    <p class="text-muted">Discover career opportunities shared by the alumni network.</p>
+                </div>
+                <a href="{{ url_for('post_job') }}" class="btn btn-primary">
+                    <i data-feather="plus" class="me-2"></i>Post Job
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Job Listings -->
+    <div class="row">
+        <div class="col-12">
+            {% if jobs %}
+                {% for job in jobs %}
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-8">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <h5 class="card-title mb-0">{{ job.title }}</h5>
+                                    <span class="badge bg-success ms-2">{{ job.job_type.title() }}</span>
+                                </div>
+                                
+                                <h6 class="text-primary mb-2">{{ job.company }}</h6>
+                                
+                                <p class="text-muted mb-2">
+                                    <i data-feather="map-pin" class="me-1" style="width: 16px; height: 16px;"></i>
+                                    {{ job.location }}
+                                    {% if job.salary_range %}
+                                    <span class="ms-3">
+                                        <i data-feather="dollar-sign" class="me-1" style="width: 16px; height: 16px;"></i>
+                                        {{ job.salary_range }}
+                                    </span>
+                                    {% endif %}
+                                </p>
+                                
+                                <p class="card-text">{{ truncate_text_filter(job.description, 200) }}</p>
+                                
+                                <small class="text-muted">
+                                    Posted by {{ job.to_dict().posted_by }} on {{ format_date_filter(job.created_at) }}
+                                </small>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="d-flex flex-column h-100 justify-content-between">
+                                    <div class="text-md-end">
+                                        <span class="badge {% if job.is_active %}bg-success{% else %}bg-secondary{% endif %} mb-2">
+                                            {{ 'Active' if job.is_active else 'Inactive' }}
+                                        </span>
+                                    </div>
+                                    <div class="d-flex gap-2 justify-content-md-end">
+                                        <button class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#jobModal{{ job.id }}">
+                                            <i data-feather="eye" class="me-1"></i>View Details
+                                        </button>
+                                        <a href="{{ url_for('send_message', recipient_id=job.posted_by_id) }}" class="btn btn-primary">
+                                            <i data-feather="mail" class="me-1"></i>Contact
+                                        </a>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Job Detail Modal -->
+                <div class="modal fade" id="jobModal{{ job.id }}" tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <div class="modal-header">
+                                <h5 class="modal-title">{{ job.title }}</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+                            <div class="modal-body">
+                                <div class="mb-3">
+                                    <h6 class="text-primary">{{ job.company }}</h6>
+                                    <p class="text-muted mb-2">
+                                        <i data-feather="map-pin" class="me-1"></i>{{ job.location }}
+                                        <span class="ms-3">
+                                            <i data-feather="clock" class="me-1"></i>{{ job.job_type.title() }}
+                                        </span>
+                                        {% if job.salary_range %}
+                                        <span class="ms-3">
+                                            <i data-feather="dollar-sign" class="me-1"></i>{{ job.salary_range }}
+                                        </span>
+                                        {% endif %}
+                                    </p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6>Job Description</h6>
+                                    <p style="white-space: pre-line;">{{ job.description }}</p>
+                                </div>
+                                
+                                <div class="mb-3">
+                                    <h6>Posted By</h6>
+                                    <p>{{ job.to_dict().posted_by }} on {{ format_date_filter(job.created_at) }}</p>
+                                </div>
+                            </div>
+                            <div class="modal-footer">
+                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                <a href="{{ url_for('send_message', recipient_id=job.posted_by_id) }}" class="btn btn-primary">
+                                    <i data-feather="mail" class="me-2"></i>Contact Poster
+                                </a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="card">
+                    <div class="card-body text-center py-5">
+                        <i data-feather="briefcase" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                        <h5 class="text-muted">No Job Opportunities</h5>
+                        <p class="text-muted">Be the first to share a career opportunity with the alumni network!</p>
+                        <a href="{{ url_for('post_job') }}" class="btn btn-primary">
+                            <i data-feather="plus" class="me-2"></i>Post First Job
+                        </a>
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}

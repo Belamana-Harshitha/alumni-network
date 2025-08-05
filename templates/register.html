@@ -1,0 +1,120 @@
+{% extends "base.html" %}
+
+{% block title %}Register - Alumni Networking Portal{% endblock %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row justify-content-center">
+        <div class="col-md-8 col-lg-6">
+            <div class="card">
+                <div class="card-header text-center">
+                    <h3><i data-feather="user-plus" class="me-2"></i>Create Account</h3>
+                    <p class="text-muted mb-0">Join the alumni networking community</p>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <!-- Basic Information -->
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="username" class="form-label">Username *</label>
+                                <input type="text" class="form-control" id="username" name="username" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="email" class="form-label">Email Address *</label>
+                                <input type="email" class="form-control" id="email" name="email" required>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="password" class="form-label">Password *</label>
+                                <input type="password" class="form-control" id="password" name="password" required minlength="6">
+                                <small class="form-text text-muted">At least 6 characters</small>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="confirm_password" class="form-label">Confirm Password *</label>
+                                <input type="password" class="form-control" id="confirm_password" name="confirm_password" required>
+                            </div>
+                        </div>
+                        
+                        <!-- Profile Information -->
+                        <hr class="my-4">
+                        <h5 class="mb-3">Profile Information</h5>
+                        
+                        <div class="mb-3">
+                            <label for="full_name" class="form-label">Full Name *</label>
+                            <input type="text" class="form-control" id="full_name" name="full_name" required>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="user_type" class="form-label">User Type *</label>
+                                <select class="form-select" id="user_type" name="user_type" required>
+                                    <option value="alumni">Alumni</option>
+                                    <option value="student">Current Student</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="graduation_year" class="form-label">Graduation Year</label>
+                                <input type="number" class="form-control" id="graduation_year" name="graduation_year" 
+                                       min="1950" max="2030" placeholder="e.g., 2020">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="department" class="form-label">Department/Major</label>
+                            <input type="text" class="form-control" id="department" name="department" 
+                                   placeholder="e.g., Computer Science, Business Administration">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="current_company" class="form-label">Current Company</label>
+                                <input type="text" class="form-control" id="current_company" name="current_company" 
+                                       placeholder="e.g., Google, Microsoft">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="location" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="location" name="location" 
+                                       placeholder="e.g., San Francisco, CA">
+                            </div>
+                        </div>
+                        
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">
+                                <i data-feather="user-plus" class="me-2"></i>Create Account
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                <div class="card-footer text-center">
+                    <p class="mb-0">Already have an account? 
+                        <a href="{{ url_for('login') }}">Login here</a>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Password confirmation validation
+document.addEventListener('DOMContentLoaded', function() {
+    const password = document.getElementById('password');
+    const confirmPassword = document.getElementById('confirm_password');
+    
+    function validatePassword() {
+        if (password.value !== confirmPassword.value) {
+            confirmPassword.setCustomValidity('Passwords do not match');
+        } else {
+            confirmPassword.setCustomValidity('');
+        }
+    }
+    
+    password.addEventListener('change', validatePassword);
+    confirmPassword.addEventListener('change', validatePassword);
+});
+</script>
+{% endblock %}

@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% block title %}Edit Profile - Alumni Networking Portal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card">
+                <div class="card-header">
+                    <h4 class="mb-0"><i data-feather="edit" class="me-2"></i>Edit Profile</h4>
+                    <p class="text-muted mb-0">Update your professional information</p>
+                </div>
+                <div class="card-body">
+                    <form method="POST">
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="full_name" class="form-label">Full Name *</label>
+                                <input type="text" class="form-control" id="full_name" name="full_name" 
+                                       value="{{ user.full_name }}" required>
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="graduation_year" class="form-label">Graduation Year</label>
+                                <input type="number" class="form-control" id="graduation_year" name="graduation_year" 
+                                       value="{{ user.graduation_year if user.graduation_year else '' }}"
+                                       min="1950" max="2030">
+                            </div>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="department" class="form-label">Department/Major</label>
+                            <input type="text" class="form-control" id="department" name="department" 
+                                   value="{{ user.department if user.department else '' }}"
+                                   placeholder="e.g., Computer Science, Business Administration">
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="current_company" class="form-label">Current Company</label>
+                                <input type="text" class="form-control" id="current_company" name="current_company" 
+                                       value="{{ user.current_company if user.current_company else '' }}"
+                                       placeholder="e.g., Google, Microsoft">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="location" class="form-label">Location</label>
+                                <input type="text" class="form-control" id="location" name="location" 
+                                       value="{{ user.location if user.location else '' }}"
+                                       placeholder="e.g., San Francisco, CA">
+                            </div>
+                        </div>
+                        
+                        <hr class="my-4">
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('profile', user_id=user.id) }}" class="btn btn-secondary">
+                                <i data-feather="arrow-left" class="me-2"></i>Cancel
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i data-feather="save" class="me-2"></i>Save Changes
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Profile Tips -->
+            <div class="card mt-4">
+                <div class="card-body">
+                    <h6 class="card-title"><i data-feather="lightbulb" class="me-2"></i>Profile Tips</h6>
+                    <ul class="mb-0">
+                        <li>Complete all fields to help other alumni find and connect with you</li>
+                        <li>Keep your company information up to date for better networking opportunities</li>
+                        <li>Include your location to find alumni in your area</li>
+                        <li>Your graduation year helps in connecting with classmates</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

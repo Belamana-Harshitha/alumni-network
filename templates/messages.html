@@ -1,0 +1,182 @@
+{% extends "base.html" %}
+
+{% block title %}Messages - Alumni Networking Portal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    {% if recipient %}
+        <!-- Send Message Form -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="mb-0"><i data-feather="send" class="me-2"></i>Send Message to {{ recipient.full_name }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            <div class="mb-3">
+                                <label for="subject" class="form-label">Subject *</label>
+                                <input type="text" class="form-control" id="subject" name="subject" required
+                                       placeholder="Enter message subject">
+                            </div>
+                            
+                            <div class="mb-3">
+                                <label for="content" class="form-label">Message *</label>
+                                <textarea class="form-control" id="content" name="content" rows="8" required
+                                          placeholder="Type your message here..."></textarea>
+                            </div>
+                            
+                            <div class="d-flex justify-content-between">
+                                <a href="{{ url_for('profile', user_id=recipient.id) }}" class="btn btn-secondary">
+                                    <i data-feather="arrow-left" class="me-2"></i>Back to Profile
+                                </a>
+                                <button type="submit" class="btn btn-primary">
+                                    <i data-feather="send" class="me-2"></i>Send Message
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    {% elif view_message %}
+        <!-- View Message -->
+        <div class="row justify-content-center">
+            <div class="col-lg-8">
+                <div class="card">
+                    <div class="card-header d-flex justify-content-between align-items-center">
+                        <h4 class="mb-0">{{ view_message.subject }}</h4>
+                        {% if not view_message.is_read and view_message.receiver_id == session.user_id %}
+                            <span class="badge bg-primary">New</span>
+                        {% endif %}
+                    </div>
+                    <div class="card-body">
+                        <div class="mb-3">
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <small class="text-muted">
+                                        <strong>From:</strong> {{ view_message.to_dict().sender }}
+                                    </small>
+                                </div>
+                                <div class="col-md-6 text-md-end">
+                                    <small class="text-muted">
+                                        {{ format_date_filter(view_message.created_at) }}
+                                    </small>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <hr>
+                        
+                        <div class="mb-3">
+                            <p style="white-space: pre-line;">{{ view_message.content }}</p>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between">
+                            <a href="{{ url_for('messages') }}" class="btn btn-secondary">
+                                <i data-feather="arrow-left" class="me-2"></i>Back to Messages
+                            </a>
+                            {% if view_message.sender_id != session.user_id %}
+                                <a href="{{ url_for('send_message', recipient_id=view_message.sender_id) }}" class="btn btn-primary">
+                                    <i data-feather="reply" class="me-2"></i>Reply
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    
+    {% else %}
+        <!-- Messages List -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h2><i data-feather="mail" class="me-2"></i>Messages</h2>
+                <p class="text-muted">Your conversations with other alumni and students.</p>
+            </div>
+        </div>
+        
+        <div class="row">
+            <div class="col-12">
+                {% if messages %}
+                    <div class="card">
+                        <div class="card-body p-0">
+                            {% for message in messages %}
+                            <div class="border-bottom p-3{% if loop.last %} border-0{% endif %}">
+                                <div class="row align-items-center">
+                                    <div class="col-md-8">
+                                        <div class="d-flex align-items-center">
+                                            {% if message.receiver_id == session.user_id and not message.is_read %}
+                                                <span class="badge bg-primary me-2">New</span>
+                                            {% endif %}
+                                            <div>
+                                                <h6 class="mb-1">
+                                                    <a href="{{ url_for('view_message', message_id=message.id) }}" 
+                                                       class="text-decoration-none">{{ message.subject }}</a>
+                                                </h6>
+                                                <small class="text-muted">
+                                                    {% if message.sender_id == session.user_id %}
+                                                        <i data-feather="send" class="me-1" style="width: 14px; height: 14px;"></i>
+                                                        To: {{ message.to_dict().receiver }}
+                                                    {% else %}
+                                                        <i data-feather="inbox" class="me-1" style="width: 14px; height: 14px;"></i>
+                                                        From: {{ message.to_dict().sender }}
+                                                    {% endif %}
+                                                </small>
+                                            </div>
+                                        </div>
+                                        <p class="text-muted mb-0 mt-1">{{ truncate_text_filter(message.content, 100) }}</p>
+                                    </div>
+                                    <div class="col-md-4 text-md-end">
+                                        <small class="text-muted d-block">{{ format_date_filter(message.created_at) }}</small>
+                                        <div class="mt-2">
+                                            <a href="{{ url_for('view_message', message_id=message.id) }}" 
+                                               class="btn btn-sm btn-outline-primary me-1">
+                                                <i data-feather="eye" class="me-1"></i>View
+                                            </a>
+                                            {% if message.sender_id != session.user_id %}
+                                                <a href="{{ url_for('send_message', recipient_id=message.sender_id) }}" 
+                                                   class="btn btn-sm btn-primary">
+                                                    <i data-feather="reply" class="me-1"></i>Reply
+                                                </a>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="card">
+                        <div class="card-body text-center py-5">
+                            <i data-feather="mail" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                            <h5 class="text-muted">No Messages</h5>
+                            <p class="text-muted">Start networking by sending messages to other alumni!</p>
+                            <a href="{{ url_for('search') }}" class="btn btn-primary">
+                                <i data-feather="search" class="me-2"></i>Find Alumni to Connect
+                            </a>
+                        </div>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Auto-expand textarea
+document.addEventListener('DOMContentLoaded', function() {
+    const textarea = document.getElementById('content');
+    if (textarea) {
+        textarea.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+    }
+});
+</script>
+{% endblock %}

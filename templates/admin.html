@@ -1,0 +1,450 @@
+{% extends "base.html" %}
+
+{% block title %}Admin Dashboard - Alumni Networking Portal{% endblock %}
+
+{% block content %}
+<div class="container py-4">
+    <!-- Admin Header -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <h2><i data-feather="settings" class="me-2"></i>Admin Dashboard</h2>
+            <p class="text-muted">Manage users, content, and platform operations.</p>
+        </div>
+    </div>
+
+    <!-- Admin Navigation Tabs -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <ul class="nav nav-tabs" id="adminTabs" role="tablist">
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if not view %}active{% endif %}" id="dashboard-tab" data-bs-toggle="tab" 
+                            data-bs-target="#dashboard" type="button" role="tab">
+                        <i data-feather="home" class="me-2"></i>Dashboard
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if view == 'users' %}active{% endif %}" id="users-tab" data-bs-toggle="tab" 
+                            data-bs-target="#users" type="button" role="tab">
+                        <i data-feather="users" class="me-2"></i>Users
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if view == 'jobs' %}active{% endif %}" id="jobs-tab" data-bs-toggle="tab" 
+                            data-bs-target="#jobs" type="button" role="tab">
+                        <i data-feather="briefcase" class="me-2"></i>Jobs
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if view == 'events' %}active{% endif %}" id="events-tab" data-bs-toggle="tab" 
+                            data-bs-target="#events" type="button" role="tab">
+                        <i data-feather="calendar" class="me-2"></i>Events
+                    </button>
+                </li>
+                <li class="nav-item" role="presentation">
+                    <button class="nav-link {% if view == 'messages' %}active{% endif %}" id="messages-tab" data-bs-toggle="tab" 
+                            data-bs-target="#messages" type="button" role="tab">
+                        <i data-feather="mail" class="me-2"></i>Messages
+                    </button>
+                </li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Tab Content -->
+    <div class="tab-content" id="adminTabContent">
+        <!-- Dashboard Tab -->
+        <div class="tab-pane fade {% if not view %}show active{% endif %}" id="dashboard" role="tabpanel">
+            <!-- Statistics Cards -->
+            {% if stats %}
+            <div class="row mb-4">
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-primary text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">{{ stats.total_users }}</h4>
+                                    <p class="mb-0">Total Users</p>
+                                </div>
+                                <i data-feather="users" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-success text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">{{ stats.total_jobs }}</h4>
+                                    <p class="mb-0">Job Posts</p>
+                                </div>
+                                <i data-feather="briefcase" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-info text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">{{ stats.total_events }}</h4>
+                                    <p class="mb-0">Events</p>
+                                </div>
+                                <i data-feather="calendar" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3 mb-3">
+                    <div class="card bg-warning text-white">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h4 class="mb-0">{{ stats.total_messages }}</h4>
+                                    <p class="mb-0">Messages</p>
+                                </div>
+                                <i data-feather="mail" style="width: 32px; height: 32px;"></i>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Recent Activity -->
+            <div class="row">
+                <div class="col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Recent Users</h6>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_users %}
+                                {% for user in recent_users %}
+                                <div class="d-flex justify-content-between align-items-center mb-2{% if loop.last %} mb-0{% endif %}">
+                                    <div>
+                                        <h6 class="mb-0">{{ user.full_name }}</h6>
+                                        <small class="text-muted">{{ user.user_type.title() }}</small>
+                                    </div>
+                                    <span class="badge {% if user.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                        {{ 'Active' if user.is_active else 'Inactive' }}
+                                    </span>
+                                </div>
+                                {% if not loop.last %}<hr class="my-2">{% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-muted mb-0">No users registered yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Recent Jobs</h6>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_jobs %}
+                                {% for job in recent_jobs %}
+                                <div class="mb-2{% if loop.last %} mb-0{% endif %}">
+                                    <h6 class="mb-0">{{ job.title }}</h6>
+                                    <small class="text-muted">{{ job.company }}</small>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">{{ format_date_short_filter(job.created_at) }}</small>
+                                        <span class="badge {% if job.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {{ 'Active' if job.is_active else 'Inactive' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                {% if not loop.last %}<hr class="my-2">{% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-muted mb-0">No jobs posted yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4 mb-4">
+                    <div class="card">
+                        <div class="card-header">
+                            <h6 class="mb-0">Recent Events</h6>
+                        </div>
+                        <div class="card-body">
+                            {% if recent_events %}
+                                {% for event in recent_events %}
+                                <div class="mb-2{% if loop.last %} mb-0{% endif %}">
+                                    <h6 class="mb-0">{{ event.title }}</h6>
+                                    <small class="text-muted">{{ event.location }}</small>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <small class="text-muted">{{ format_date_short_filter(event.date) }}</small>
+                                        <span class="badge {% if event.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                            {{ 'Active' if event.is_active else 'Inactive' }}
+                                        </span>
+                                    </div>
+                                </div>
+                                {% if not loop.last %}<hr class="my-2">{% endif %}
+                                {% endfor %}
+                            {% else %}
+                                <p class="text-muted mb-0">No events scheduled yet.</p>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Users Tab -->
+        <div class="tab-pane fade {% if view == 'users' %}show active{% endif %}" id="users" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">User Management</h5>
+                </div>
+                <div class="card-body">
+                    {% if users %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Name</th>
+                                        <th>Username</th>
+                                        <th>Email</th>
+                                        <th>Type</th>
+                                        <th>Graduation Year</th>
+                                        <th>Department</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for user in users %}
+                                    <tr>
+                                        <td>{{ user.full_name }}</td>
+                                        <td>{{ user.username }}</td>
+                                        <td>{{ user.email }}</td>
+                                        <td><span class="badge bg-info">{{ user.user_type.title() }}</span></td>
+                                        <td>{{ user.graduation_year if user.graduation_year else 'N/A' }}</td>
+                                        <td>{{ user.department if user.department else 'N/A' }}</td>
+                                        <td>
+                                            <span class="badge {% if user.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                                {{ 'Active' if user.is_active else 'Inactive' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('admin_toggle_user_status', user_id=user.id) }}" 
+                                               class="btn btn-sm {% if user.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                                                {% if user.is_active %}Deactivate{% else %}Activate{% endif %}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i data-feather="users" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                            <h5 class="text-muted">No Users Found</h5>
+                            <p class="text-muted">Users will appear here once they register.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Jobs Tab -->
+        <div class="tab-pane fade {% if view == 'jobs' %}show active{% endif %}" id="jobs" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Job Management</h5>
+                </div>
+                <div class="card-body">
+                    {% if jobs %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Company</th>
+                                        <th>Location</th>
+                                        <th>Type</th>
+                                        <th>Posted By</th>
+                                        <th>Posted Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for job in jobs %}
+                                    <tr>
+                                        <td>{{ job.title }}</td>
+                                        <td>{{ job.company }}</td>
+                                        <td>{{ job.location }}</td>
+                                        <td><span class="badge bg-info">{{ job.job_type.title() }}</span></td>
+                                        <td>{{ job.to_dict().posted_by }}</td>
+                                        <td>{{ format_date_short_filter(job.created_at) }}</td>
+                                        <td>
+                                            <span class="badge {% if job.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                                {{ 'Active' if job.is_active else 'Inactive' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('admin_toggle_job_status', job_id=job.id) }}" 
+                                               class="btn btn-sm {% if job.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                                                {% if job.is_active %}Deactivate{% else %}Activate{% endif %}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i data-feather="briefcase" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                            <h5 class="text-muted">No Jobs Found</h5>
+                            <p class="text-muted">Job postings will appear here once users create them.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Events Tab -->
+        <div class="tab-pane fade {% if view == 'events' %}show active{% endif %}" id="events" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Event Management</h5>
+                </div>
+                <div class="card-body">
+                    {% if events %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Title</th>
+                                        <th>Location</th>
+                                        <th>Date</th>
+                                        <th>Organized By</th>
+                                        <th>Created Date</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for event in events %}
+                                    <tr>
+                                        <td>{{ event.title }}</td>
+                                        <td>{{ event.location }}</td>
+                                        <td>{{ format_date_short_filter(event.date) }}</td>
+                                        <td>{{ event.to_dict().organized_by }}</td>
+                                        <td>{{ format_date_short_filter(event.created_at) }}</td>
+                                        <td>
+                                            <span class="badge {% if event.is_active %}bg-success{% else %}bg-secondary{% endif %}">
+                                                {{ 'Active' if event.is_active else 'Inactive' }}
+                                            </span>
+                                        </td>
+                                        <td>
+                                            <a href="{{ url_for('admin_toggle_event_status', event_id=event.id) }}" 
+                                               class="btn btn-sm {% if event.is_active %}btn-outline-danger{% else %}btn-outline-success{% endif %}">
+                                                {% if event.is_active %}Deactivate{% else %}Activate{% endif %}
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i data-feather="calendar" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                            <h5 class="text-muted">No Events Found</h5>
+                            <p class="text-muted">Events will appear here once users create them.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+
+        <!-- Messages Tab -->
+        <div class="tab-pane fade {% if view == 'messages' %}show active{% endif %}" id="messages" role="tabpanel">
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Message Overview</h5>
+                </div>
+                <div class="card-body">
+                    {% if messages %}
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Subject</th>
+                                        <th>From</th>
+                                        <th>To</th>
+                                        <th>Date</th>
+                                        <th>Status</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for message in messages %}
+                                    <tr>
+                                        <td>{{ message.subject }}</td>
+                                        <td>{{ message.to_dict().sender }}</td>
+                                        <td>{{ message.to_dict().receiver }}</td>
+                                        <td>{{ format_date_short_filter(message.created_at) }}</td>
+                                        <td>
+                                            <span class="badge {% if message.is_read %}bg-success{% else %}bg-warning{% endif %}">
+                                                {{ 'Read' if message.is_read else 'Unread' }}
+                                            </span>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    {% else %}
+                        <div class="text-center py-4">
+                            <i data-feather="mail" class="text-muted mb-3" style="width: 48px; height: 48px;"></i>
+                            <h5 class="text-muted">No Messages Found</h5>
+                            <p class="text-muted">Messages will appear here once users start communicating.</p>
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Handle admin tab navigation
+document.addEventListener('DOMContentLoaded', function() {
+    // Update URL when tab is changed
+    const triggerTabList = [].slice.call(document.querySelectorAll('#adminTabs button[data-bs-toggle="tab"]'));
+    triggerTabList.forEach(function (triggerEl) {
+        triggerEl.addEventListener('shown.bs.tab', function (event) {
+            const target = event.target.getAttribute('data-bs-target');
+            const tabName = target.replace('#', '');
+            if (tabName !== 'dashboard') {
+                window.history.replaceState(null, null, `{{ url_for('admin_dashboard') }}?tab=${tabName}`);
+            } else {
+                window.history.replaceState(null, null, `{{ url_for('admin_dashboard') }}`);
+            }
+        });
+    });
+
+    // Confirm deactivation actions
+    document.querySelectorAll('[href*="toggle_status"]').forEach(function(link) {
+        link.addEventListener('click', function(e) {
+            const action = this.textContent.trim();
+            if (!confirm(`Are you sure you want to ${action.toLowerCase()} this item?`)) {
+                e.preventDefault();
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
